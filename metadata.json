@@ -1,0 +1,6 @@
+{
+  "name": "Assistente Virtual - SEDUC-GO",
+  "description": "Aplicativo de bate-papo com assistente virtual para esclarecer dúvidas relacionadas aos sistemas e procedimentos da SEDUC-GO (Secretaria de Estado da Educação de Goiás), desenvolvido com Google Gemini API.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
