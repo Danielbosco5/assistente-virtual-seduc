@@ -34,14 +34,40 @@ O sistema de aprendizado persistente usa o Upstash Redis para armazenar o conhec
 
 - `POST /api/learn` - Salvar novo conhecimento
 - `GET /api/knowledge` - Recuperar todo conhecimento
+- `GET/DELETE /api/admin` - Administrar conhecimento (listar/excluir)
+
+### Comandos disponíveis:
+
+| Comando | Função | Exemplo |
+|---------|---------|---------|
+| `#Aprend@` | Ensinar algo novo | `#Aprend@` → `O horário é 7h às 17h` |
+| `#Issoétudo@` | Cancelar aprendizado | Cancela o modo de aprendizado |
+| `#Admin@` | Painel de administração | Mostra link para gerenciar conhecimento |
+
+### Administração do Conhecimento:
+
+**Painel Admin**: https://assistente-virtual-seduc-994yeura5.vercel.app/admin.html
+**Chave de Admin**: `seduc-admin-2025`
+
+**Funcionalidades do painel:**
+- 📊 Estatísticas de conhecimento
+- 👁️ Visualizar todas as entradas
+- 🗑️ Excluir conhecimento específico
+- 📅 Ver data/hora de cada entrada
 
 ### Uso:
 
-O assistente agora aprende permanentemente usando o comando `/aprender` seguido da informação.
+O assistente agora aprende permanentemente usando o comando `#Aprend@` seguido da informação.
 
 **Exemplo:**
 ```
-/aprender O horário de funcionamento da SEDUC é de 7h às 17h
+#Aprend@
+```
+Depois digite: `O horário de funcionamento da SEDUC é de 7h às 17h`
+
+**Para administrar o conhecimento:**
+```
+#Admin@
 ```
 
 O conhecimento será salvo permanentemente e estará disponível em todas as futuras conversas!
