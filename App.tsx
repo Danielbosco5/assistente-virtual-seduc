@@ -125,7 +125,7 @@ const App: React.FC = () => {
         <Header assistantName={ASSISTANT_NAME} />
         
         <main 
-          className={`flex-grow overflow-y-auto custom-scrollbar bg-white shadow-inner space-y-3 ${isEmbedded ? 'p-2' : 'p-3 sm:p-4 space-y-4'}`}
+          className={`flex-grow overflow-y-auto custom-scrollbar bg-white shadow-inner ${isEmbedded ? 'p-2 space-y-2' : 'p-3 sm:p-4 space-y-4'}`}
           role="log"
           aria-live="polite"
           aria-atomic="false"
@@ -135,13 +135,13 @@ const App: React.FC = () => {
             <MessageDisplay key={msg.id} message={msg} />
           ))}
           {isLoading && (
-            <div className="flex justify-center py-3">
+            <div className={`flex justify-center ${isEmbedded ? 'py-2' : 'py-3'}`}>
               <LoadingSpinner size="md" />
             </div>
           )}
           {error && (
             <div 
-              className="text-red-700 p-3 bg-red-100 border border-red-300 rounded-lg text-base my-2 mx-auto max-w-lg text-center shadow"
+              className={`text-red-700 bg-red-100 border border-red-300 rounded-lg my-2 mx-auto text-center shadow ${isEmbedded ? 'p-2 text-sm max-w-full' : 'p-3 text-base max-w-lg'}`}
               role="alert"
             >
               <strong>Atenção:</strong> {error}
