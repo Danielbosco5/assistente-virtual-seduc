@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
 
 export interface KnowledgeEntry {
   content: string;
@@ -17,14 +17,20 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    // Chave para armazenar o conhecimento no Vercel KV
+    // Configurar Redis Upstash
+    const redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL!,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+    });
+    
+    // Chave para armazenar o conhecimento no Redis
     const KNOWLEDGE_KEY = 'seduc-knowledge-base';
     
     let knowledgeData: KnowledgeData = { learnedEntries: [] };
     
     try {
-      // Tentar ler dados existentes do Vercel KV
-      const existingData = await kv.get<KnowledgeData>(KNOWLEDGE_KEY);
+      // Tentar ler dados existentes do Redis
+      const existingData = await redis.get<KnowledgeData>(KNOWLEDGE_KEY);
       if (existingData) {
         knowledgeData = existingData;
       }
