@@ -210,26 +210,44 @@
         }
         
         async function login() {
+            console.log('Login function called');
             adminKey = document.getElementById('adminKey').value;
+            console.log('Admin key entered:', adminKey ? 'Yes' : 'No');
             
             if (!adminKey) {
                 showAlert('Por favor, digite a chave de administração.', 'error');
                 return;
             }
             
+            // Mostrar loading
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = 'Verificando...';
+            button.disabled = true;
+            
             try {
+                console.log('Making request to /api/admin');
                 const response = await fetch(`/api/admin?adminKey=${encodeURIComponent(adminKey)}`);
+                console.log('Response status:', response.status);
+                
                 const result = await response.json();
+                console.log('Response result:', result);
                 
                 if (result.success) {
                     document.getElementById('loginSection').style.display = 'none';
                     document.getElementById('knowledgeSection').style.display = 'block';
+                    showAlert('Login realizado com sucesso!', 'success');
                     loadKnowledge();
                 } else {
-                    showAlert(result.message, 'error');
+                    showAlert(result.message || 'Chave de administração inválida.', 'error');
                 }
             } catch (error) {
-                showAlert('Erro ao conectar com o servidor.', 'error');
+                console.error('Login error:', error);
+                showAlert('Erro ao conectar com o servidor. Verifique se o Upstash Redis está configurado.', 'error');
+            } finally {
+                // Restaurar botão
+                button.textContent = originalText;
+                button.disabled = false;
             }
         }
         

@@ -17,7 +17,7 @@ export interface AdminRequest {
 }
 
 // Chave de administração simples (em produção, use algo mais seguro)
-const ADMIN_KEY = 'seduc-admin-2025';
+const ADMIN_KEY = '#Admineduca@';
 
 export default async function handler(req: any, res: any) {
   // Permitir GET (listar) e DELETE (remover)

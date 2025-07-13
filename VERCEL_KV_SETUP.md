@@ -47,7 +47,7 @@ O sistema de aprendizado persistente usa o Upstash Redis para armazenar o conhec
 ### Administração do Conhecimento:
 
 **Painel Admin**: https://assistente-virtual-seduc-994yeura5.vercel.app/admin.html
-**Chave de Admin**: `seduc-admin-2025`
+**Chave de Admin**: `#Admineduca@`
 
 **Funcionalidades do painel:**
 - 📊 Estatísticas de conhecimento

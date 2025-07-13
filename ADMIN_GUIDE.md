@@ -12,7 +12,7 @@
 ### 🔐 **Acesso ao Painel:**
 
 1. **URL**: `https://assistente-virtual-seduc-994yeura5.vercel.app/admin.html`
-2. **Chave de Administração**: `seduc-admin-2025`
+2. **Chave de Administração**: `#Admineduca@`
 
 ### 📋 **Como Usar:**
 
