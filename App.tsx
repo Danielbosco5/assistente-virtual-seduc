@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChatMessage, MessageSender, NewMessagePayload, WebSource } from './types';
-import { ASSISTANT_NAME, INITIAL_ASSISTANT_MESSAGE_PAYLOAD, SEDUC_HELP_DESK_PHONE, SEDUC_HELP_DESK_TEAMS_URL, EDUCA_PORTAL_TI_SOLUTIONS_URL, LEARN_COMMAND, CANCEL_LEARN_COMMAND } from './constants';
+import { ASSISTANT_NAME, INITIAL_ASSISTANT_MESSAGE_PAYLOAD, SEDUC_HELP_DESK_PHONE, SEDUC_HELP_DESK_TEAMS_URL, EDUCA_PORTAL_TI_SOLUTIONS_URL, LEARN_COMMAND, CANCEL_LEARN_COMMAND, ADMIN_COMMAND } from './constants';
 import ChatInput from './components/ChatInput';
 import MessageDisplay from './components/ChatMessage';
 import Header from './components/Header';
@@ -69,6 +69,15 @@ const App: React.FC = () => {
   const handleSubmit = async (userInput: string, imageBase64?: string) => {
     if (!userInput.trim() && !imageBase64) return;
     const trimmedInput = userInput.trim().toLowerCase();
+
+    // Handle admin command
+    if (trimmedInput === ADMIN_COMMAND.toLowerCase()) {
+      addMessage({
+        text: `🛡️ **Painel de Administração**\n\nPara acessar o painel de administração do conhecimento, visite:\n\n${window.location.origin}/admin.html\n\n⚠️ **Acesso restrito**: Necessária chave de administração.`,
+        sender: MessageSender.SYSTEM,
+      });
+      return;
+    }
 
     // Handle learning command
     if (trimmedInput === LEARN_COMMAND.toLowerCase()) {

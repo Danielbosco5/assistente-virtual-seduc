@@ -2,6 +2,7 @@ import { MessageSender, NewMessagePayload } from './types.js';
 
 export const LEARN_COMMAND = "#Aprend@";
 export const CANCEL_LEARN_COMMAND = "#Issoétudo@";
+export const ADMIN_COMMAND = "#Admin@";
 
 export const SEDUC_HELP_DESK_PHONE = "(62) 3220-9546";
 export const SEDUC_HELP_DESK_TEAMS_URL = "http://teams.educacao.go.gov.br/atendimento";
