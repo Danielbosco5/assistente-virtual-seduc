@@ -7,7 +7,7 @@
     
     // Configurações do widget
     const WIDGET_CONFIG = {
-        apiUrl: window.SEDUC_API_URL || 'https://assistente-virtual-seduc.vercel.app/api/chat', // Substitua pela URL do seu deploy
+        apiUrl: window.SEDUC_API_URL || 'https://assistente-virtual-seduc-danielbosco5s-projects.vercel.app/api/chat', // URL do seu deploy no Vercel
         assistantName: 'Assistente Virtual SEDUC-GO',
         theme: {
             primaryColor: '#2563eb',

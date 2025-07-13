@@ -35,7 +35,7 @@ class SeducChatWidget {
     
     public function add_widget_config() {
         if (!is_admin()) {
-            $api_url = get_option('seduc_api_url', 'https://assistente-virtual-seduc.vercel.app/api/chat');
+            $api_url = get_option('seduc_api_url', 'https://assistente-virtual-seduc-danielbosco5s-projects.vercel.app/api/chat');
             echo "<script>window.SEDUC_API_URL = '{$api_url}';</script>";
         }
     }
@@ -139,7 +139,7 @@ if (get_option('seduc_widget_enabled', '1') == '1') {
 
 // Hook de ativação
 register_activation_hook(__FILE__, function() {
-    add_option('seduc_api_url', 'https://assistente-virtual-seduc.vercel.app/api/chat');
+    add_option('seduc_api_url', 'https://assistente-virtual-seduc-danielbosco5s-projects.vercel.app/api/chat');
     add_option('seduc_widget_enabled', '1');
 });
 
