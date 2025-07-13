@@ -338,7 +338,7 @@ PERSONALIZAÇÕES PARA O PORTAL EDUCA:
         // Carregar iframe se necessário
         if (!iframeLoaded) {
             loading.style.display = 'block';
-            iframe.src = PORTAL_CONFIG.assistantUrl + '?source=portal-educa';
+            iframe.src = PORTAL_CONFIG.assistantUrl + '?source=portal-educa&embedded=true';
             iframeLoaded = true;
         }
         

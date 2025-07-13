@@ -380,7 +380,7 @@
             
             if (!this.iframeLoaded) {
                 this.elements.loading.style.display = 'block';
-                this.elements.iframe.src = this.config.assistantUrl;
+                this.elements.iframe.src = this.config.assistantUrl + '?embedded=true';
                 this.iframeLoaded = true;
             }
             

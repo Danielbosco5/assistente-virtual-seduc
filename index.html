@@ -10,6 +10,13 @@
       body {
         font-size: 16px; /* Increased base font size */
       }
+      /* Estilos para modo embarcado/iframe */
+      .embedded-mode {
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 100vh !important;
+        overflow: hidden !important;
+      }
       /* Custom scrollbar for webkit browsers */
       .custom-scrollbar::-webkit-scrollbar {
         width: 10px; /* Slightly thicker scrollbar */
@@ -48,6 +55,20 @@
   <body class="antialiased text-gray-800">
     <noscript>Você precisa habilitar o JavaScript para rodar este aplicativo.</noscript>
     <div id="root"></div>
+    
+    <script>
+      // Detectar se está em iframe e aplicar classe
+      if (window.location !== window.parent.location || 
+          new URLSearchParams(window.location.search).has('embedded') ||
+          new URLSearchParams(window.location.search).has('iframe') ||
+          new URLSearchParams(window.location.search).get('source') === 'portal-educa') {
+        document.body.classList.add('embedded-mode');
+        document.documentElement.style.height = '100%';
+        document.body.style.height = '100%';
+        document.getElementById('root').style.height = '100%';
+      }
+    </script>
+    
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>

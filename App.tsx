@@ -12,12 +12,18 @@ import { ChatIcon } from './components/icons/ChatIcon';
 import { XIcon } from './components/icons/XIcon';
 
 const App: React.FC = () => {
+  // Detectar se está em iframe ou modo embarcado
+  const isEmbedded = window.location !== window.parent.location || 
+                    new URLSearchParams(window.location.search).has('embedded') ||
+                    new URLSearchParams(window.location.search).has('iframe') ||
+                    new URLSearchParams(window.location.search).get('source') === 'portal-educa';
+  
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isLearningMode, setIsLearningMode] = useState<boolean>(false);
   const [sessionLearnedKnowledge, setSessionLearnedKnowledge] = useState<string[]>([]);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(isEmbedded); // Abrir automaticamente se embedded
   const chatEndRef = useRef<HTMLDivElement>(null);
   const isInitialized = useRef(false);
 
@@ -99,18 +105,21 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-[9999] flex flex-col items-end">
+    <div className={isEmbedded ? "h-screen w-full flex flex-col" : "fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-[9999] flex flex-col items-end"}>
       {/* Chat Window */}
       <div
         className={`
-          flex flex-col bg-gray-50 rounded-xl shadow-2xl transition-all duration-300 ease-in-out origin-bottom-right
-          ${isOpen 
-            ? 'w-[calc(100vw-32px)] h-[calc(100vh-88px)] sm:w-[400px] sm:h-[70vh] max-h-[600px] opacity-100 scale-100' 
-            : 'w-0 h-0 opacity-0 scale-95'
+          flex flex-col bg-gray-50 rounded-xl shadow-2xl transition-all duration-300 ease-in-out
+          ${isEmbedded 
+            ? 'w-full h-full opacity-100 scale-100 rounded-none shadow-none' 
+            : `origin-bottom-right ${isOpen 
+              ? 'w-[calc(100vw-32px)] h-[calc(100vh-88px)] sm:w-[400px] sm:h-[70vh] max-h-[600px] opacity-100 scale-100' 
+              : 'w-0 h-0 opacity-0 scale-95'
+            }`
           }
         `}
         style={{
-          pointerEvents: isOpen ? 'auto' : 'none',
+          pointerEvents: isOpen || isEmbedded ? 'auto' : 'none',
         }}
       >
         <Header assistantName={ASSISTANT_NAME} />
@@ -150,20 +159,22 @@ const App: React.FC = () => {
         />
       </div>
 
-      {/* Toggle Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="mt-4 bg-blue-600 text-white p-3 sm:p-4 rounded-full shadow-lg hover:bg-blue-700 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-400 focus:ring-opacity-75"
-        aria-label={isOpen ? "Fechar chat" : "Abrir chat"}
-        title={isOpen ? "Fechar chat" : "Abrir chat"}
-      >
-        <div className="transition-transform duration-300 ease-in-out" style={{ transform: isOpen ? 'rotate(180deg) scale(0)' : 'rotate(0) scale(1)' }}>
-            <ChatIcon className={`w-7 h-7 sm:w-8 sm:h-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${!isOpen ? 'opacity-100' : 'opacity-0'}`} />
-        </div>
-        <div className="transition-transform duration-300 ease-in-out" style={{ transform: !isOpen ? 'rotate(-180deg) scale(0)' : 'rotate(0) scale(1)' }}>
-            <XIcon className={`w-7 h-7 sm:w-8 sm:h-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${isOpen ? 'opacity-100' : 'opacity-0'}`} />
-        </div>
-      </button>
+      {/* Toggle Button - apenas mostrar se não estiver embarcado */}
+      {!isEmbedded && (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="mt-4 bg-blue-600 text-white p-3 sm:p-4 rounded-full shadow-lg hover:bg-blue-700 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-400 focus:ring-opacity-75"
+          aria-label={isOpen ? "Fechar chat" : "Abrir chat"}
+          title={isOpen ? "Fechar chat" : "Abrir chat"}
+        >
+          <div className="transition-transform duration-300 ease-in-out" style={{ transform: isOpen ? 'rotate(180deg) scale(0)' : 'rotate(0) scale(1)' }}>
+              <ChatIcon className={`w-7 h-7 sm:w-8 sm:h-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${!isOpen ? 'opacity-100' : 'opacity-0'}`} />
+          </div>
+          <div className="transition-transform duration-300 ease-in-out" style={{ transform: !isOpen ? 'rotate(-180deg) scale(0)' : 'rotate(0) scale(1)' }}>
+              <XIcon className={`w-7 h-7 sm:w-8 sm:h-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${isOpen ? 'opacity-100' : 'opacity-0'}`} />
+          </div>
+        </button>
+      )}
     </div>
   );
 };

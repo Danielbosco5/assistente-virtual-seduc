@@ -228,7 +228,7 @@
             // Carregar iframe se ainda não foi carregado
             if (!iframeLoaded) {
                 loading.style.display = 'block';
-                iframe.src = CONFIG.assistantUrl;
+                iframe.src = CONFIG.assistantUrl + '?embedded=true';
                 iframeLoaded = true;
             }
             
