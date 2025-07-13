@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       body {
-        font-size: 16px; /* Increased base font size */
+        font-size: 14px; /* Reduced base font size for iframe */
       }
       /* Estilos para modo embarcado/iframe */
       .embedded-mode {
@@ -16,26 +16,30 @@
         padding: 0 !important;
         height: 100vh !important;
         overflow: hidden !important;
+        font-size: 14px !important;
+      }
+      .embedded-mode #root {
+        height: 100vh !important;
       }
       /* Custom scrollbar for webkit browsers */
       .custom-scrollbar::-webkit-scrollbar {
-        width: 10px; /* Slightly thicker scrollbar */
-        height: 10px;
+        width: 8px; /* Thinner scrollbar for iframe */
+        height: 8px;
       }
       .custom-scrollbar::-webkit-scrollbar-track {
         background: #f1f1f1;
-        border-radius: 10px;
+        border-radius: 8px;
       }
       .custom-scrollbar::-webkit-scrollbar-thumb {
         background: #b0b0b0; /* Improved contrast for thumb */
-        border-radius: 10px;
+        border-radius: 8px;
       }
       .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: #909090;
       }
       /* For Firefox */
       .custom-scrollbar {
-        scrollbar-width: auto; /* Or 'thin', 'auto' is often better for accessibility */
+        scrollbar-width: thin; /* Thinner scrollbar for iframe */
         scrollbar-color: #b0b0b0 #f1f1f1;
       }
     </style>

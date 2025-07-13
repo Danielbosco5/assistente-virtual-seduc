@@ -11,6 +11,12 @@ interface ChatInputProps {
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, isLoading, isLearningMode = false }) => {
+  // Detectar se está em iframe ou modo embarcado
+  const isEmbedded = window.location !== window.parent.location || 
+                    new URLSearchParams(window.location.search).has('embedded') ||
+                    new URLSearchParams(window.location.search).has('iframe') ||
+                    new URLSearchParams(window.location.search).get('source') === 'portal-educa';
+
   const [inputText, setInputText] = useState('');
   const [imageBase64, setImageBase64] = useState<string | undefined>(undefined);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | undefined>(undefined);
@@ -79,7 +85,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, isLoading, isLearningMo
     : "Escreva sua dúvida aqui. Estou pronto para te ajudar! 😊";
 
   return (
-    <div className="bg-gray-100 p-2 sm:p-3 border-t border-gray-300 sticky bottom-0 shadow-top">
+    <div className={`bg-gray-100 border-t border-gray-300 sticky bottom-0 shadow-top ${isEmbedded ? 'p-2' : 'p-2 sm:p-3'}`}>
       {imagePreviewUrl && !isLearningMode && (
         <div className="px-2 pt-1">
             <div className="relative inline-block p-1 bg-gray-200 rounded-md shadow max-w-[120px] max-h-24 overflow-hidden">
@@ -99,7 +105,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, isLoading, isLearningMo
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="p-2 sm:p-2.5 text-gray-600 hover:text-blue-600 transition-colors duration-150 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={`${isEmbedded ? 'p-1.5' : 'p-2 sm:p-2.5'} text-gray-600 hover:text-blue-600 transition-colors duration-150 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500`}
           aria-label="Anexar imagem"
           title="Anexar imagem"
           disabled={isLoading || isLearningMode}
@@ -121,7 +127,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, isLoading, isLearningMo
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholderText}
-            className="w-full py-2.5 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none custom-scrollbar min-h-[44px] max-h-36 text-base leading-snug bg-white text-gray-900 placeholder:text-gray-500"
+            className={`w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none custom-scrollbar max-h-36 bg-white text-gray-900 placeholder:text-gray-500 ${isEmbedded ? 'py-2 px-2.5 text-sm min-h-[36px]' : 'py-2.5 px-3 text-base min-h-[44px]'} leading-snug`}
             rows={1}
             disabled={isLoading}
             aria-label="Caixa de texto para sua mensagem"
@@ -131,7 +137,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, isLoading, isLearningMo
         <button
           type="submit"
           disabled={isLoading || (!inputText.trim() && !imageBase64)}
-          className="p-2.5 sm:p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150"
+          className={`${isEmbedded ? 'p-2' : 'p-2.5 sm:p-3'} bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150`}
           aria-label="Enviar mensagem"
           title="Enviar mensagem"
         >

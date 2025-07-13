@@ -105,14 +105,14 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className={isEmbedded ? "h-screen w-full flex flex-col" : "fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-[9999] flex flex-col items-end"}>
+    <div className={isEmbedded ? "h-screen w-full flex flex-col bg-gray-50" : "fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-[9999] flex flex-col items-end"}>
       {/* Chat Window */}
       <div
         className={`
-          flex flex-col bg-gray-50 rounded-xl shadow-2xl transition-all duration-300 ease-in-out
+          flex flex-col transition-all duration-300 ease-in-out
           ${isEmbedded 
-            ? 'w-full h-full opacity-100 scale-100 rounded-none shadow-none' 
-            : `origin-bottom-right ${isOpen 
+            ? 'w-full h-full opacity-100 scale-100 bg-gray-50 rounded-none shadow-none' 
+            : `bg-gray-50 rounded-xl shadow-2xl origin-bottom-right ${isOpen 
               ? 'w-[calc(100vw-32px)] h-[calc(100vh-88px)] sm:w-[400px] sm:h-[70vh] max-h-[600px] opacity-100 scale-100' 
               : 'w-0 h-0 opacity-0 scale-95'
             }`
@@ -125,7 +125,7 @@ const App: React.FC = () => {
         <Header assistantName={ASSISTANT_NAME} />
         
         <main 
-          className="flex-grow overflow-y-auto p-3 sm:p-4 space-y-4 custom-scrollbar bg-white shadow-inner"
+          className={`flex-grow overflow-y-auto custom-scrollbar bg-white shadow-inner space-y-3 ${isEmbedded ? 'p-2' : 'p-3 sm:p-4 space-y-4'}`}
           role="log"
           aria-live="polite"
           aria-atomic="false"
