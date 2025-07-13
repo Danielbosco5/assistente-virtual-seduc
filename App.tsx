@@ -125,7 +125,7 @@ const App: React.FC = () => {
         <Header assistantName={ASSISTANT_NAME} />
         
         <main 
-          className={`flex-grow overflow-y-auto custom-scrollbar bg-white shadow-inner ${isEmbedded ? 'p-2 space-y-2' : 'p-3 sm:p-4 space-y-4'}`}
+          className={`flex-grow overflow-y-auto custom-scrollbar bg-white shadow-inner ${isEmbedded ? 'p-1 space-y-2' : 'p-3 sm:p-4 space-y-4'}`}
           role="log"
           aria-live="polite"
           aria-atomic="false"
@@ -152,11 +152,14 @@ const App: React.FC = () => {
 
         <ChatInput onSubmit={handleSubmit} isLoading={isLoading} isLearningMode={isLearningMode} />
         
-        <Footer
-          phone={SEDUC_HELP_DESK_PHONE}
-          teamsUrl={SEDUC_HELP_DESK_TEAMS_URL}
-          educaPortalUrl={EDUCA_PORTAL_TI_SOLUTIONS_URL}
-        />
+        {/* Footer - apenas mostrar se não estiver embarcado */}
+        {!isEmbedded && (
+          <Footer
+            phone={SEDUC_HELP_DESK_PHONE}
+            teamsUrl={SEDUC_HELP_DESK_TEAMS_URL}
+            educaPortalUrl={EDUCA_PORTAL_TI_SOLUTIONS_URL}
+          />
+        )}
       </div>
 
       {/* Toggle Button - apenas mostrar se não estiver embarcado */}

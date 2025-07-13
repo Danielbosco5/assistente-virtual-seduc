@@ -14,7 +14,7 @@ const Header: React.FC<HeaderProps> = ({ assistantName }) => {
                     new URLSearchParams(window.location.search).get('source') === 'portal-educa';
 
   return (
-    <header className={`bg-gradient-to-r from-blue-600 to-green-500 text-white shadow-lg sticky top-0 z-20 ${isEmbedded ? 'p-2' : 'p-3 sm:p-4'}`}>
+    <header className={`bg-gradient-to-r from-blue-600 to-green-500 text-white shadow-lg sticky top-0 z-20 ${isEmbedded ? 'p-1.5' : 'p-3 sm:p-4'}`}>
       <div className="container mx-auto flex items-center justify-between">
         <div>
           <h1 className={`font-semibold ${isEmbedded ? 'text-lg' : 'text-xl sm:text-2xl'}`}>{assistantName}</h1>
