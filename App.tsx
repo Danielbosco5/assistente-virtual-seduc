@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChatMessage, MessageSender, NewMessagePayload, WebSource } from './types';
 import { ASSISTANT_NAME, INITIAL_ASSISTANT_MESSAGE_PAYLOAD, SEDUC_HELP_DESK_PHONE, SEDUC_HELP_DESK_TEAMS_URL, EDUCA_PORTAL_TI_SOLUTIONS_URL, LEARN_COMMAND, CANCEL_LEARN_COMMAND } from './constants';
@@ -8,6 +7,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import LoadingSpinner from './components/LoadingSpinner';
 import { askSeducAssistant } from './services/geminiService';
+import { saveKnowledge, getKnowledge, formatKnowledgeForPrompt } from './services/knowledgeService';
 import { ChatIcon } from './components/icons/ChatIcon';
 import { XIcon } from './components/icons/XIcon';
 
@@ -22,7 +22,7 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isLearningMode, setIsLearningMode] = useState<boolean>(false);
-  const [sessionLearnedKnowledge, setSessionLearnedKnowledge] = useState<string[]>([]);
+  const [persistentKnowledge, setPersistentKnowledge] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(isEmbedded); // Abrir automaticamente se embedded
   const chatEndRef = useRef<HTMLDivElement>(null);
   const isInitialized = useRef(false);
@@ -51,6 +51,21 @@ const App: React.FC = () => {
     }
   }, [messages, isOpen]);
 
+  // Carregar conhecimento persistente ao inicializar
+  useEffect(() => {
+    const loadPersistentKnowledge = async () => {
+      try {
+        const knowledgeData = await getKnowledge();
+        const formattedKnowledge = formatKnowledgeForPrompt(knowledgeData);
+        setPersistentKnowledge(formattedKnowledge);
+      } catch (error) {
+        console.error('Erro ao carregar conhecimento persistente:', error);
+      }
+    };
+
+    loadPersistentKnowledge();
+  }, []);
+
   const handleSubmit = async (userInput: string, imageBase64?: string) => {
     if (!userInput.trim() && !imageBase64) return;
     const trimmedInput = userInput.trim().toLowerCase();
@@ -74,12 +89,38 @@ const App: React.FC = () => {
       }
       
       const newKnowledge = userInput.trim();
-      setSessionLearnedKnowledge(prev => [...prev, newKnowledge]);
+      setIsLoading(true);
       
-      addMessage({
-        text: `Obrigado! A seguinte informação foi adicionada ao meu conhecimento para esta sessão:\n\n*_"${newKnowledge}"_*\n\nPor ser um ambiente de demonstração web, este conhecimento será perdido ao recarregar a página. A versão para Microsoft Teams possui aprendizado persistente.`,
-        sender: MessageSender.SYSTEM,
-      });
+      try {
+        // Salvar conhecimento persistentemente
+        const result = await saveKnowledge(newKnowledge);
+        
+        if (result.success) {
+          // Recarregar conhecimento persistente
+          const knowledgeData = await getKnowledge();
+          const formattedKnowledge = formatKnowledgeForPrompt(knowledgeData);
+          setPersistentKnowledge(formattedKnowledge);
+          
+          addMessage({
+            text: `Obrigado! A seguinte informação foi salva permanentemente no meu conhecimento:\n\n*_"${newKnowledge}"_*\n\nEsta informação agora estará disponível em todas as futuras conversas, mesmo após recarregar a página.`,
+            sender: MessageSender.SYSTEM,
+          });
+        } else {
+          addMessage({
+            text: `Desculpe, ocorreu um erro ao salvar o conhecimento: ${result.message}`,
+            sender: MessageSender.SYSTEM,
+          });
+        }
+      } catch (error) {
+        console.error('Erro ao salvar conhecimento:', error);
+        addMessage({
+          text: `Erro ao salvar conhecimento. Tente novamente mais tarde.`,
+          sender: MessageSender.SYSTEM,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+      
       return;
     }
 
@@ -89,7 +130,7 @@ const App: React.FC = () => {
     setError(null);
 
     try {
-      const assistantResponse = await askSeducAssistant(userInput, messages, imageBase64, sessionLearnedKnowledge); 
+      const assistantResponse = await askSeducAssistant(userInput, messages, imageBase64, persistentKnowledge); 
       addMessage(
         { text: assistantResponse.text, sender: MessageSender.ASSISTANT },
         assistantResponse.sources
