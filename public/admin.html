@@ -252,17 +252,24 @@
         }
         
         async function loadKnowledge() {
+            console.log('Loading knowledge...');
             try {
+                console.log('Making request to /api/admin with key:', adminKey);
                 const response = await fetch(`/api/admin?adminKey=${encodeURIComponent(adminKey)}`);
+                console.log('Response status:', response.status);
+                
                 const result = await response.json();
+                console.log('Response result:', result);
                 
                 if (result.success) {
+                    console.log('Knowledge loaded successfully, entries:', result.data.learnedEntries.length);
                     displayKnowledge(result.data);
                     updateStats(result.data);
                 } else {
                     showAlert(result.message, 'error');
                 }
             } catch (error) {
+                console.error('Load knowledge error:', error);
                 showAlert('Erro ao carregar conhecimento.', 'error');
             }
         }
@@ -302,11 +309,18 @@
         }
         
         async function deleteEntry(index) {
+            console.log('Delete function called with index:', index);
+            console.log('Admin key:', adminKey);
+            
             if (!confirm('Tem certeza que deseja excluir esta entrada?')) {
+                console.log('User cancelled deletion');
                 return;
             }
             
+            console.log('User confirmed deletion, proceeding...');
+            
             try {
+                console.log('Making DELETE request to /api/admin');
                 const response = await fetch('/api/admin', {
                     method: 'DELETE',
                     headers: {
@@ -318,15 +332,20 @@
                     })
                 });
                 
+                console.log('Response status:', response.status);
                 const result = await response.json();
+                console.log('Response result:', result);
                 
                 if (result.success) {
                     showAlert(result.message, 'success');
+                    console.log('Reloading knowledge after successful deletion');
                     loadKnowledge(); // Recarregar lista
                 } else {
                     showAlert(result.message, 'error');
+                    console.error('Delete failed:', result.message);
                 }
             } catch (error) {
+                console.error('Delete error:', error);
                 showAlert('Erro ao excluir entrada.', 'error');
             }
         }
