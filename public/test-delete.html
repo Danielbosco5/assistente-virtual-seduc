@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Exclusão - Admin</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        button { padding: 10px 20px; margin: 10px; }
+        .result { margin: 10px 0; padding: 10px; background: #f5f5f5; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste de Exclusão - Painel Admin</h1>
+    
+    <div class="test-section">
+        <h2>1. Listar Conhecimento</h2>
+        <button onclick="listKnowledge()">📋 Listar Entradas</button>
+        <div id="listResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Excluir Primeira Entrada</h2>
+        <button onclick="deleteFirst()">🗑️ Excluir Entrada #0</button>
+        <div id="deleteResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Console Logs</h2>
+        <p>Abra o Console do navegador (F12) para ver logs detalhados</p>
+    </div>
+
+    <script>
+        const ADMIN_KEY = '#Admineduca@';
+        
+        async function listKnowledge() {
+            const resultDiv = document.getElementById('listResult');
+            resultDiv.innerHTML = 'Carregando...';
+            
+            try {
+                console.log('🔍 Listando conhecimento...');
+                const response = await fetch(`/api/admin?adminKey=${encodeURIComponent(ADMIN_KEY)}`);
+                console.log('📡 Response status:', response.status);
+                
+                const result = await response.json();
+                console.log('📋 Response data:', result);
+                
+                if (result.success) {
+                    const entries = result.data.learnedEntries;
+                    let html = `<strong>✅ Total: ${entries.length} entradas</strong><br><br>`;
+                    
+                    entries.forEach((entry, index) => {
+                        html += `<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd;">
+                            <strong>[${index}]</strong> ${entry.content}<br>
+                            <small>📅 ${new Date(entry.timestamp).toLocaleString('pt-BR')}</small>
+                        </div>`;
+                    });
+                    
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = `❌ Erro: ${result.message}`;
+                }
+            } catch (error) {
+                console.error('❌ Erro ao listar:', error);
+                resultDiv.innerHTML = `❌ Erro: ${error.message}`;
+            }
+        }
+        
+        async function deleteFirst() {
+            const resultDiv = document.getElementById('deleteResult');
+            resultDiv.innerHTML = 'Processando...';
+            
+            try {
+                console.log('🗑️ Excluindo entrada #0...');
+                const response = await fetch('/api/admin', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        entryIndex: 0,
+                        adminKey: ADMIN_KEY
+                    })
+                });
+                
+                console.log('📡 Delete response status:', response.status);
+                const result = await response.json();
+                console.log('📋 Delete response data:', result);
+                
+                if (result.success) {
+                    resultDiv.innerHTML = `✅ ${result.message}<br><strong>Entradas restantes: ${result.totalEntries}</strong>`;
+                    console.log('✅ Exclusão bem-sucedida!');
+                } else {
+                    resultDiv.innerHTML = `❌ Erro: ${result.message}`;
+                    console.error('❌ Falha na exclusão:', result.message);
+                }
+            } catch (error) {
+                console.error('❌ Erro ao excluir:', error);
+                resultDiv.innerHTML = `❌ Erro: ${error.message}`;
+            }
+        }
+        
+        // Auto-carregar conhecimento ao abrir a página
+        document.addEventListener('DOMContentLoaded', listKnowledge);
+    </script>
+</body>
+</html>
