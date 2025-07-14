@@ -1,4 +1,5 @@
 import { Redis } from '@upstash/redis';
+import { kv } from '@vercel/kv';
 
 export interface KnowledgeEntry {
   content: string;
@@ -26,26 +27,26 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    // Verificar se as variáveis de ambiente estão configuradas
-    const redisUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_URL;
-    const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
-    
-    if (!redisUrl || !redisToken) {
-      console.error('Variáveis de ambiente do Upstash não configuradas');
-      console.error('URL:', !!redisUrl ? 'OK' : 'MISSING');
-      console.error('TOKEN:', !!redisToken ? 'OK' : 'MISSING');
+    // Verificar qual banco de dados usar
+    let useUpstash = false;
+    let useVercelKV = false;
+
+    // Verificar se Upstash está configurado
+    if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+      useUpstash = true;
+    }
+    // Senão, verificar se Vercel KV está configurado  
+    else if (process.env.KV_URL && process.env.KV_REST_API_TOKEN) {
+      useVercelKV = true;
+    }
+    else {
+      console.error('Nenhum banco de dados configurado');
       return res.status(500).json({
         success: false,
-        message: 'Configuração do banco de dados não encontrada. Verifique as variáveis de ambiente no Vercel.'
+        message: 'Configuração do banco de dados não encontrada. Configure Upstash Redis ou Vercel KV no Vercel.'
       });
     }
 
-    // Configurar Redis Upstash
-    const redis = new Redis({
-      url: redisUrl,
-      token: redisToken,
-    });
-    
     const KNOWLEDGE_KEY = 'seduc-knowledge-base';
 
     // LISTAR conhecimento (GET)
@@ -59,7 +60,19 @@ export default async function handler(req: any, res: any) {
         });
       }
 
-      const knowledgeData = await redis.get<KnowledgeData>(KNOWLEDGE_KEY) || { learnedEntries: [] };
+      let knowledgeData: KnowledgeData = { learnedEntries: [] };
+
+      if (useUpstash) {
+        const redis = new Redis({
+          url: process.env.UPSTASH_REDIS_REST_URL!,
+          token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+        });
+        const data = await redis.get<KnowledgeData>(KNOWLEDGE_KEY);
+        if (data) knowledgeData = data;
+      } else if (useVercelKV) {
+        const data = await kv.get<KnowledgeData>(KNOWLEDGE_KEY);
+        if (data) knowledgeData = data;
+      }
       
       return res.status(200).json({
         success: true,
@@ -86,7 +99,20 @@ export default async function handler(req: any, res: any) {
         });
       }
 
-      const knowledgeData = await redis.get<KnowledgeData>(KNOWLEDGE_KEY) || { learnedEntries: [] };
+      let knowledgeData: KnowledgeData = { learnedEntries: [] };
+
+      // Recuperar dados
+      if (useUpstash) {
+        const redis = new Redis({
+          url: process.env.UPSTASH_REDIS_REST_URL!,
+          token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+        });
+        const data = await redis.get<KnowledgeData>(KNOWLEDGE_KEY);
+        if (data) knowledgeData = data;
+      } else if (useVercelKV) {
+        const data = await kv.get<KnowledgeData>(KNOWLEDGE_KEY);
+        if (data) knowledgeData = data;
+      }
       
       if (entryIndex >= knowledgeData.learnedEntries.length) {
         return res.status(404).json({ 
@@ -99,7 +125,15 @@ export default async function handler(req: any, res: any) {
       const removedEntry = knowledgeData.learnedEntries.splice(entryIndex, 1)[0];
       
       // Salvar dados atualizados
-      await redis.set(KNOWLEDGE_KEY, knowledgeData);
+      if (useUpstash) {
+        const redis = new Redis({
+          url: process.env.UPSTASH_REDIS_REST_URL!,
+          token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+        });
+        await redis.set(KNOWLEDGE_KEY, knowledgeData);
+      } else if (useVercelKV) {
+        await kv.set(KNOWLEDGE_KEY, knowledgeData);
+      }
 
       return res.status(200).json({
         success: true,
