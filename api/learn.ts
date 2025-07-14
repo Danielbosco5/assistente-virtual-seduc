@@ -47,7 +47,7 @@ export default async function handler(req: any, res: any) {
       storageType = 'Upstash Redis';
     }
     // Senão, verificar se Vercel KV está configurado  
-    else if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+    else if (process.env.KV_URL && process.env.KV_REST_API_TOKEN) {
       useVercelKV = true;
       storageType = 'Vercel KV';
     }
