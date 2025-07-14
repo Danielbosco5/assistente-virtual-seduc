@@ -35,6 +35,15 @@ export default async function handler(req: any, res: any) {
       });
     }
 
+    // Verificar se as variáveis de ambiente estão configuradas
+    if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+      console.error('Variáveis de ambiente do Upstash não configuradas');
+      return res.status(500).json({
+        success: false,
+        message: 'Configuração do banco de dados não encontrada. Verifique as variáveis de ambiente no Vercel.'
+      });
+    }
+
     // Configurar Redis Upstash
     const redis = new Redis({
       url: process.env.UPSTASH_REDIS_REST_URL!,
