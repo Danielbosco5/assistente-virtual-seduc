@@ -81,6 +81,10 @@
             background: #1D4ED8;
         }
         
+        button[style*="background: #10B981"]:hover {
+            background: #059669 !important;
+        }
+        
         .delete-btn {
             background: #DC2626;
             padding: 6px 12px;
@@ -187,6 +191,26 @@
             
             <div id="alertContainer"></div>
             
+            <!-- Seção para adicionar novo aprendizado -->
+            <div style="margin-bottom: 30px; padding: 20px; background: #F0F9FF; border-radius: 10px; border: 1px solid #BAE6FD;">
+                <h3 style="margin-bottom: 15px; color: #1E40AF;">➕ Adicionar Novo Aprendizado</h3>
+                <div class="input-group">
+                    <label for="newKnowledge">Conteúdo do Conhecimento:</label>
+                    <textarea id="newKnowledge" 
+                              rows="4" 
+                              style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; resize: vertical; font-family: inherit;" 
+                              placeholder="Digite o novo conhecimento que o assistente deve aprender..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="knowledgeSource">Fonte (opcional):</label>
+                    <input type="text" 
+                           id="knowledgeSource" 
+                           style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;" 
+                           placeholder="Ex: Manual SEDUC, Documentação oficial, etc.">
+                </div>
+                <button onclick="addKnowledge()" style="background: #10B981;">💾 Adicionar Conhecimento</button>
+            </div>
+
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2>Conhecimento Armazenado</h2>
                 <button onclick="loadKnowledge()">🔄 Atualizar</button>
@@ -308,6 +332,59 @@
             container.innerHTML = html;
         }
         
+        async function addKnowledge() {
+            console.log('Add knowledge function called');
+            
+            const knowledge = document.getElementById('newKnowledge').value.trim();
+            const source = document.getElementById('knowledgeSource').value.trim() || 'Adição manual pelo admin';
+            
+            if (!knowledge) {
+                showAlert('Por favor, digite o conteúdo do conhecimento.', 'error');
+                return;
+            }
+            
+            // Mostrar loading
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '💾 Salvando...';
+            button.disabled = true;
+            
+            try {
+                console.log('Making POST request to /api/learn');
+                const response = await fetch('/api/learn', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        knowledge: knowledge
+                    })
+                });
+                
+                console.log('Response status:', response.status);
+                const result = await response.json();
+                console.log('Response result:', result);
+                
+                if (result.success) {
+                    showAlert('Conhecimento adicionado com sucesso!', 'success');
+                    // Limpar formulário
+                    document.getElementById('newKnowledge').value = '';
+                    document.getElementById('knowledgeSource').value = '';
+                    // Recarregar lista
+                    loadKnowledge();
+                } else {
+                    showAlert(result.message || 'Erro ao adicionar conhecimento.', 'error');
+                }
+            } catch (error) {
+                console.error('Add knowledge error:', error);
+                showAlert('Erro ao conectar com o servidor.', 'error');
+            } finally {
+                // Restaurar botão
+                button.textContent = originalText;
+                button.disabled = false;
+            }
+        }
+        
         async function deleteEntry(index) {
             console.log('Delete function called with index:', index);
             console.log('Admin key:', adminKey);
@@ -355,6 +432,16 @@
             if (e.key === 'Enter') {
                 login();
             }
+        });
+        
+        // Permitir adicionar conhecimento com Ctrl+Enter
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('newKnowledge').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    e.preventDefault();
+                    addKnowledge();
+                }
+            });
         });
     </script>
 </body>
