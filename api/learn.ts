@@ -36,8 +36,13 @@ export default async function handler(req: any, res: any) {
     }
 
     // Verificar se as variáveis de ambiente estão configuradas
-    if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    const redisUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_URL;
+    const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+    
+    if (!redisUrl || !redisToken) {
       console.error('Variáveis de ambiente do Upstash não configuradas');
+      console.error('URL:', !!redisUrl ? 'OK' : 'MISSING');
+      console.error('TOKEN:', !!redisToken ? 'OK' : 'MISSING');
       return res.status(500).json({
         success: false,
         message: 'Configuração do banco de dados não encontrada. Verifique as variáveis de ambiente no Vercel.'
@@ -46,8 +51,8 @@ export default async function handler(req: any, res: any) {
 
     // Configurar Redis Upstash
     const redis = new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL!,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+      url: redisUrl,
+      token: redisToken,
     });
     
     // Chave para armazenar o conhecimento no Redis
